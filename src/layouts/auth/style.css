@@ -1,29 +1,35 @@
-@import '@/styles/bootstrap/bootstrap.min.css';
-@import '@/styles/bootstrap_limitless/bootstrap_limitless.min.css';
+@import '@/styles/layouts/l1/layout.min.css';
+@import '@/styles/components/l1/components.min.css';
 
 html {
     display: -ms-flexbox;
     display: flex;
     -ms-flex-direction: column;
     flex-direction: column;
+    -ms-flex: 1;
+    flex: 1;
+    height: 100%;
+    overflow: hidden;
 }
 
 body {
-    min-height: 100vh;
     display: -ms-flexbox;
     display: flex;
     -ms-flex-direction: column;
     flex-direction: column;
     -ms-flex: 1;
     flex: 1;
+    height: 100%;
+    overflow: hidden;
 }
 
 #root {
-    min-height: 100vh;
     display: -ms-flexbox;
     display: flex;
     -ms-flex-direction: column;
     flex-direction: column;
     -ms-flex: 1;
     flex: 1;
+    height: 100%;
+    overflow: hidden;
 }

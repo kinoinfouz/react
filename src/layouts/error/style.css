@@ -1,0 +1,48 @@
+.page-content {
+    display: -ms-flexbox;
+    display: flex;
+    -ms-flex-positive: 1;
+    flex-grow: 1;
+    position: relative;
+    overflow: hidden;
+}
+
+.content-wrapper {
+    display: -ms-flexbox;
+    display: flex;
+    -ms-flex-direction: column;
+    flex-direction: column;
+    -ms-flex: 1;
+    flex: 1;
+    position: relative;
+    min-width: 0;
+}
+
+.content-inner {
+    display: -ms-flexbox;
+    display: flex;
+    -ms-flex-direction: column;
+    flex-direction: column;
+    height: 100%;
+    position: relative;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+    .content-inner {
+        scroll-behavior: smooth;
+    }
+}
+
+.content {
+    padding: var(--spacer) 1.25rem;
+    -ms-flex-positive: 1;
+    flex-grow: 1;
+}
+
+.content::after {
+    display: block;
+    clear: both;
+    content: "";
+}
