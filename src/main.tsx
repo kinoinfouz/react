@@ -4,6 +4,7 @@ import {BrowserRouter} from 'react-router-dom'
 
 import {TanStackQueryProvider} from '@/contexts/tan-stack-query'
 import {AuthStateProvider} from '@/contexts/auth-state'
+import {NotificationProvider} from '@/contexts/notification'
 
 import '@/index.css'
 
@@ -13,9 +14,11 @@ createRoot(document.getElementById('root')!).render(
   <StrictMode>
     <TanStackQueryProvider>
       <BrowserRouter>
-        <AuthStateProvider>
-          <App/>
-        </AuthStateProvider>
+        <NotificationProvider>
+          <AuthStateProvider>
+            <App/>
+          </AuthStateProvider>
+        </NotificationProvider>
       </BrowserRouter>
     </TanStackQueryProvider>
   </StrictMode>

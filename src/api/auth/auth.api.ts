@@ -71,7 +71,7 @@ export const AuthApi = {
   },
 
   getMe: async () => {
-    const {data} = await axiosInstance.get<GetMeResponse>('auth/me')
+    const {data} = await axiosInstance.get<GetMeResponse>('/auth/me')
 
     return data
   }

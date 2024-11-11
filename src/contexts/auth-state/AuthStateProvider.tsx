@@ -1,19 +1,14 @@
-import {createContext, lazy, ReactNode, useContext, useRef, useState} from 'react'
+import {createContext, ReactNode, useContext, useRef, useState} from 'react'
 import {useEffectOnce, useGetSet} from 'react-use'
 
 import {userTokenStorage} from '@/helpers/user.token.storage'
 import axiosInstance from '@/api/axios-instance'
 import {AuthApi} from '@/api/auth/auth.api'
 
-const Error404 = lazy(() => import('@/layouts/error/Error404'))
-
-interface Props {
-  children: ReactNode
-}
-
 interface AuthStateType {
   isAuth: boolean,
   accessToken: string | null,
+  userData: UserInterface | null
 }
 
 interface DateTimeInterface {
@@ -23,7 +18,7 @@ interface DateTimeInterface {
   format: string,
 }
 
-interface UserType {
+interface UserInterface {
   id: number,
   username: string,
   display_name: string,
@@ -38,12 +33,22 @@ interface UserType {
   deleted: DateTimeInterface,
 }
 
+interface Logout {
+  status: boolean,
+  message: string
+}
+
 interface AuthMethodsType {
   initialize: VoidFunction,
   setAccessToken: (token: string) => void,
-  fetchUserData: VoidFunction,
   removeAccessToken: VoidFunction,
-  setUserData: (user: UserType) => void,
+  setUserData: (user: UserInterface) => void,
+  logout: () => Promise<Logout>
+}
+
+interface ResponseError {
+  code: number,
+  message: string
 }
 
 const AuthState = createContext<AuthStateType | null>(null)
@@ -52,23 +57,38 @@ const AuthMethod = createContext<AuthMethodsType | null>(null)
 const initialState = () => ({
   isAuth: userTokenStorage.hasToken(),
   accessToken: userTokenStorage.getToken(),
+  userData: null
 })
 
-export const AuthStateProvider = (props: Props) => {
-  const {children} = props
-
+export const AuthStateProvider = ({children}: { children: ReactNode }) => {
   const [initialCheck, setInitialCheck] = useState(false)
   const [getAuthState, setAuthState] = useGetSet<AuthStateType>(initialState)
   const methodRef = useRef<AuthMethodsType>()
 
   if (!methodRef.current) {
-    const setUserData = (user: UserType) => {
-      setAuthState((prev) => ({
-        ...prev,
-        userData: user
-      }))
+    const logout = async () => {
+      const response = await AuthApi.logout()
 
-      console.log('setUserData')
+      const {status} = response
+      if (status) {
+        const {result} = response
+        const {message} = result as { message: string }
+
+        removeAccessToken()
+
+        return {
+          status: true,
+          message: message
+        }
+      } else {
+        const {error} = response
+        const {message} = error as ResponseError
+
+        return {
+          status: false,
+          message: message
+        }
+      }
     }
 
     const removeAccessToken = () => {
@@ -76,23 +96,11 @@ export const AuthStateProvider = (props: Props) => {
       delete axiosInstance.defaults.headers['Authorization']
     }
 
-    const fetchUserData = async () => {
-      const response = await AuthApi.getMe()
-
-      const {status} = response
-      if (status) {
-        const {data} = response
-        setUserData(data as UserType)
-      } else {
-        removeAccessToken()
-        setAuthState((prevState) => ({
-          ...prevState,
-          isAuth: false,
-          accessToken: 'bearer-token'
-        }))
-      }
-
-      console.log('fetchUserData')
+    const setUserData = (user: UserInterface) => {
+      setAuthState((prev) => ({
+        ...prev,
+        userData: user
+      }))
     }
 
     const setAccessToken = async (token: string) => {
@@ -112,17 +120,29 @@ export const AuthStateProvider = (props: Props) => {
       if (isAuth) {
         axiosInstance.defaults.headers["Authorization"] = `Bearer ${accessToken}`
 
-        await fetchUserData()
+        const response = await AuthApi.getMe()
+
+        const {status} = response
+        if (status) {
+          const {data} = response
+          setUserData(data as UserInterface)
+        } else {
+          removeAccessToken()
+          setAuthState((prevState) => ({
+            ...prevState,
+            isAuth: false,
+            accessToken: 'bearer-token'
+          }))
+        }
       }
 
       setInitialCheck(true)
-      console.log('initialize')
     }
 
     methodRef.current = {
-      setUserData,
+      logout,
       removeAccessToken,
-      fetchUserData,
+      setUserData,
       setAccessToken,
       initialize
     }
@@ -133,7 +153,7 @@ export const AuthStateProvider = (props: Props) => {
   })
 
   if (!initialCheck) {
-    return <Error404/>
+    return null
   }
 
   return (
