@@ -28,7 +28,6 @@ export const AuthLayout = () => {
       const {token} = result as AuthResponse
 
       setAccessToken(token)
-      setUserData(user)
 
       navigate('/')
     } else {

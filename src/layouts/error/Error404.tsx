@@ -10,7 +10,12 @@ const Error404 = () => {
           <div className={'content d-flex justify-content-center align-items-center'}>
             <div className={'flex-fill'}>
               <div className={'text-center mb-4'}>
-                <img src={bgError} className="img-fluid mb-3" height="230" alt=""/>
+                <img
+                  src={bgError}
+                  className="img-fluid mb-3"
+                  height="230"
+                  alt=""
+                />
 
                 <h1 className="display-3 fw-semibold lh-1 mb-3">
                   404
