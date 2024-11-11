@@ -1,14 +1,33 @@
 import {useState} from 'react'
+import {useNavigate} from 'react-router-dom'
 import {useForm} from 'react-hook-form'
 
-import {Inputs, Credentials} from '@/types/auth/auth'
-import {ResponseError, AuthResponse} from '@/types/response'
-import {AuthApi} from '@/api/auth/auth'
+import {useAuthMethod} from '@/contexts/auth-state'
+import {AuthApi} from '@/api/auth/auth.api'
 
 import '@/layouts/auth/style.css'
-
 import {CaretCircleRight, Lock, UserCircle} from '@phosphor-icons/react'
 import logo from '@/assets/logo.svg'
+
+interface Inputs {
+  username: string,
+  password: string
+}
+
+interface Credentials {
+  username: string,
+  password: string
+}
+
+interface ResponseError {
+  code: number,
+  message: string
+}
+
+interface AuthResponse {
+  message: string,
+  token: string,
+}
 
 export const AuthLayout = () => {
   const {
@@ -18,14 +37,16 @@ export const AuthLayout = () => {
   } = useForm<Inputs>()
 
   const [errorMessage, setErrorMessage] = useState('')
+  const {setAccessToken} = useAuthMethod()
+  const navigate = useNavigate()
 
   const submitForm = async (credentials: Credentials) => {
     const response = await AuthApi.login(credentials)
-
     const {status} = response
+
     if (status) {
-      const {result} = response
-      const {token} = result as AuthResponse
+      const {data} = response
+      const {token} = data as AuthResponse
 
       setAccessToken(token)
 

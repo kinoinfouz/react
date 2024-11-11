@@ -1,34 +1,57 @@
-import {createContext, ReactNode, useContext, useRef, useState} from 'react'
-
+import {createContext, lazy, ReactNode, useContext, useRef, useState} from 'react'
 import {useEffectOnce, useGetSet} from 'react-use'
 
-import {userTokenStorage} from "@/helpers/user.token.storage"
+import {userTokenStorage} from '@/helpers/user.token.storage'
+import axiosInstance from '@/api/axios-instance'
+import {AuthApi} from '@/api/auth/auth.api'
+
+const Error404 = lazy(() => import('@/layouts/error/Error404'))
 
 interface Props {
   children: ReactNode
 }
 
 interface AuthStateType {
-  isAuth: boolean
-  accessToken: string
+  isAuth: boolean,
+  accessToken: string | null,
+}
+
+interface DateTimeInterface {
+  human: string,
+  string: string,
+  timestamp: number,
+  format: string,
+}
+
+interface UserType {
+  id: number,
+  username: string,
+  display_name: string,
+  last_ip: string,
+  last_login: DateTimeInterface,
+  trashed: boolean,
+  su: boolean,
+  status: boolean,
+  role: [],
+  created: DateTimeInterface,
+  updated: DateTimeInterface,
+  deleted: DateTimeInterface,
 }
 
 interface AuthMethodsType {
   initialize: VoidFunction,
-  // setUserData: (user: UserType) => void,
-  // setAccessToken: (token: string) => void,
-  // fetchUserData: VoidFunction,
-  // removeAccessToken: VoidFunction,
-  // logout: () => Promise<SignOut>
+  setAccessToken: (token: string) => void,
+  fetchUserData: VoidFunction,
+  removeAccessToken: VoidFunction,
+  setUserData: (user: UserType) => void,
 }
 
-const AuthStateContext = createContext<AuthStateType | null>(null)
-const AuthMethodsContext = createContext<AuthMethodsType | null>(null);
+const AuthState = createContext<AuthStateType | null>(null)
+const AuthMethod = createContext<AuthMethodsType | null>(null)
 
 const initialState = () => ({
   isAuth: userTokenStorage.hasToken(),
   accessToken: userTokenStorage.getToken(),
-  userData: null
 })
 
 export const AuthStateProvider = (props: Props) => {
@@ -36,14 +59,16 @@ export const AuthStateProvider = (props: Props) => {
 
   const [initialCheck, setInitialCheck] = useState(false)
   const [getAuthState, setAuthState] = useGetSet<AuthStateType>(initialState)
-  const methodsRef = useRef<AuthMethodsType>()
+  const methodRef = useRef<AuthMethodsType>()
 
-  if (!methodsRef.current) {
+  if (!methodRef.current) {
     const setUserData = (user: UserType) => {
       setAuthState((prev) => ({
         ...prev,
         userData: user
       }))
+
+      console.log('setUserData')
     }
 
     const removeAccessToken = () => {
@@ -52,12 +77,12 @@ export const AuthStateProvider = (props: Props) => {
     }
 
     const fetchUserData = async () => {
-      const response = await ProfileApi.getMe()
+      const response = await AuthApi.getMe()
 
       const {status} = response
       if (status) {
-        const {result} = response
-        setUserData(result as UserType)
+        const {data} = response
+        setUserData(data as UserType)
       } else {
         removeAccessToken()
         setAuthState((prevState) => ({
@@ -66,49 +91,62 @@ export const AuthStateProvider = (props: Props) => {
           accessToken: 'bearer-token'
         }))
       }
+
+      console.log('fetchUserData')
+    }
+
+    const setAccessToken = async (token: string) => {
+      userTokenStorage.setToken(token)
+      axiosInstance.defaults.headers["Authorization"] = `Bearer ${token}`
+
+      setAuthState((prev) => ({
+        ...prev,
+        accessToken: token,
+        isAuth: true,
+      }))
     }
 
     const initialize = async () => {
-      // const {isAuth, accessToken} = getAuthState()
+      const {isAuth, accessToken} = getAuthState()
 
-      // if (isAuth) {
-      //   axiosInstance.defaults.headers["Authorization"] = `Bearer ${accessToken}`
-      //
-      //   await fetchUserData()
-      // }
+      if (isAuth) {
+        axiosInstance.defaults.headers["Authorization"] = `Bearer ${accessToken}`
+
+        await fetchUserData()
+      }
 
       setInitialCheck(true)
+      console.log('initialize')
     }
 
-    methodsRef.current = {
-      // logout,
-      // setUserData,
-      // removeAccessToken,
-      // setAccessToken,
-      // fetchUserData,
+    methodRef.current = {
+      setUserData,
+      removeAccessToken,
+      fetchUserData,
+      setAccessToken,
       initialize
     }
   }
 
   useEffectOnce(() => {
-    methodsRef.current!.initialize()
+    methodRef.current!.initialize()
   })
 
   if (!initialCheck) {
-    return null
+    return <Error404/>
   }
 
   return (
-    <AuthStateContext.Provider value={getAuthState()}>
-      <AuthMethodsContext.Provider value={methodsRef.current}>
+    <AuthState.Provider value={getAuthState()}>
+      <AuthMethod.Provider value={methodRef.current}>
         {children}
-      </AuthMethodsContext.Provider>
-    </AuthStateContext.Provider>
-  )
+      </AuthMethod.Provider>
+    </AuthState.Provider>
+  );
 }
 
-export const useAuthState = (): AuthStateType => {
-  const context = useContext(AuthStateContext);
+export const useAuthState = () => {
+  const context = useContext(AuthState);
 
   if (!context) {
     throw new Error("useAuthState must be used within a AuthProvider");
@@ -117,11 +155,11 @@ export const useAuthState = (): AuthStateType => {
   return context;
 }
 
-export const useAuthMethods = (): AuthMethodsType => {
-  const context = useContext(AuthMethodsContext);
+export const useAuthMethod = () => {
+  const context = useContext(AuthMethod);
 
   if (!context) {
-    throw new Error("useAuthMethods must be used within a AuthProvider");
+    throw new Error("useAuthMethod must be used within a AuthProvider");
   }
 
   return context;
