@@ -5,51 +5,7 @@ import {userTokenStorage} from '@/helpers/user.token.storage'
 import axiosInstance from '@/api/axios-instance'
 import {AuthApi} from '@/api/auth/auth.api'
 
-interface AuthStateType {
-  isAuth: boolean,
-  accessToken: string | null,
-  userData: UserInterface | null
-}
-
-interface DateTimeInterface {
-  human: string,
-  string: string,
-  timestamp: number,
-  format: string,
-}
-
-interface UserInterface {
-  id: number,
-  username: string,
-  display_name: string,
-  last_ip: string,
-  last_login: DateTimeInterface,
-  trashed: boolean,
-  su: boolean,
-  status: boolean,
-  role: [],
-  created: DateTimeInterface,
-  updated: DateTimeInterface,
-  deleted: DateTimeInterface,
-}
-
-interface Logout {
-  status: boolean,
-  message: string
-}
-
-interface AuthMethodsType {
-  initialize: VoidFunction,
-  setAccessToken: (token: string) => void,
-  removeAccessToken: VoidFunction,
-  setUserData: (user: UserInterface) => void,
-  logout: () => Promise<Logout>
-}
-
-interface ResponseError {
-  code: number,
-  message: string
-}
+import {AuthMethodsType, AuthStateType, ResponseError, UserInterface} from '@/types/type'
 
 const AuthState = createContext<AuthStateType | null>(null)
 const AuthMethod = createContext<AuthMethodsType | null>(null)

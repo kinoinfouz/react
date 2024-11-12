@@ -1,33 +1,15 @@
-import {useState} from 'react'
 import {useNavigate} from 'react-router-dom'
 import {useForm} from 'react-hook-form'
 
 import {useAuthMethod} from '@/contexts/auth-state'
 import {AuthApi} from '@/api/auth/auth.api'
+import {useNotification} from '@/contexts/notification'
 
 import '@/layouts/auth/style.css'
 import {CaretCircleRight, Lock, UserCircle} from '@phosphor-icons/react'
 import logo from '@/assets/logo.svg'
 
-interface Inputs {
-  username: string,
-  password: string
-}
-
-interface Credentials {
-  username: string,
-  password: string
-}
-
-interface ResponseError {
-  code: number,
-  message: string
-}
-
-interface AuthResponse {
-  message: string,
-  token: string,
-}
+import {Inputs, Credentials, ResponseError, AuthResponse} from '@/types/type'
 
 export const AuthLayout = () => {
   const {
@@ -36,7 +18,7 @@ export const AuthLayout = () => {
     formState: {errors},
   } = useForm<Inputs>()
 
-  const [errorMessage, setErrorMessage] = useState('')
+  const {notification} = useNotification()
   const {setAccessToken} = useAuthMethod()
   const navigate = useNavigate()
 
@@ -55,7 +37,7 @@ export const AuthLayout = () => {
       const {error} = response
       const {message} = error as ResponseError
 
-      setErrorMessage(message)
+      notification('error', message)
     }
   }
 
@@ -75,8 +57,6 @@ export const AuthLayout = () => {
                     <h5 className="mb-0">Login to your account</h5>
                     <span className="d-block text-muted">Enter your credentials below</span>
                   </div>
-
-                  {errorMessage && <div className="alert alert-danger alert-dismissible fade show">{errorMessage}</div>}
 
                   <div className="mb-3">
                     <label className="form-label">Имя пользователя</label>
