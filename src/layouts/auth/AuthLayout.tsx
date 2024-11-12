@@ -12,29 +12,20 @@ import logo from '@/assets/logo.svg'
 import {Inputs, Credentials, ResponseError, AuthResponse} from '@/types/type'
 
 export const AuthLayout = () => {
-  const {
-    register,
-    handleSubmit,
-    formState: {errors},
-  } = useForm<Inputs>()
-
+  const {register, handleSubmit, formState: {errors}} = useForm<Inputs>()
   const {notification} = useNotification()
   const {setAccessToken} = useAuthMethod()
   const navigate = useNavigate()
 
   const submitForm = async (credentials: Credentials) => {
-    const response = await AuthApi.login(credentials)
-    const {status} = response
+    const {status, data, error} = await AuthApi.login(credentials)
 
     if (status) {
-      const {data} = response
       const {token} = data as AuthResponse
 
       setAccessToken(token)
-
       navigate('/')
     } else {
-      const {error} = response
       const {message} = error as ResponseError
 
       notification('error', message)
@@ -54,8 +45,8 @@ export const AuthLayout = () => {
                       <img src={logo} className="h-48px" alt="Kinoinfo"/>
                     </div>
 
-                    <h5 className="mb-0">Login to your account</h5>
-                    <span className="d-block text-muted">Enter your credentials below</span>
+                    <h5 className="mb-0">Войдите в свой аккаунт</h5>
+                    <span className="d-block text-muted">Введите свои учетные данные ниже</span>
                   </div>
 
                   <div className="mb-3">

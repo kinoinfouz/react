@@ -93,8 +93,8 @@ export interface Logout {
 
 export interface AuthMethodsType {
   initialize: VoidFunction,
-  setAccessToken: (token: string) => void,
-  removeAccessToken: VoidFunction,
-  setUserData: (user: UserInterface) => void,
-  logout: () => Promise<Logout>
+  // setAccessToken: (token: string) => void,
+  // removeAccessToken: VoidFunction,
+  // setUserData: (user: UserInterface) => void,
+  // logout: () => Promise<Logout>
 }

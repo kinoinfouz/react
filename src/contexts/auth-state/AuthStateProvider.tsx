@@ -5,7 +5,7 @@ import {userTokenStorage} from '@/helpers/user.token.storage'
 import axiosInstance from '@/api/axios-instance'
 import {AuthApi} from '@/api/auth/auth.api'
 
-import {AuthMethodsType, AuthStateType, ResponseError, UserInterface} from '@/types/type'
+import {AuthMethodsType, AuthStateType, /**ResponseError, UserInterface*/} from '@/types/type'
 
 const AuthState = createContext<AuthStateType | null>(null)
 const AuthMethod = createContext<AuthMethodsType | null>(null)
@@ -22,53 +22,53 @@ export const AuthStateProvider = ({children}: { children: ReactNode }) => {
   const methodRef = useRef<AuthMethodsType>()
 
   if (!methodRef.current) {
-    const logout = async () => {
-      const response = await AuthApi.logout()
+    // const logout = async () => {
+    //   const response = await AuthApi.logout()
+    //
+    //   const {status} = response
+    //   if (status) {
+    //     const {result} = response
+    //     const {message} = result as { message: string }
+    //
+    //     removeAccessToken()
+    //
+    //     return {
+    //       status: true,
+    //       message: message
+    //     }
+    //   } else {
+    //     const {error} = response
+    //     const {message} = error as ResponseError
+    //
+    //     return {
+    //       status: false,
+    //       message: message
+    //     }
+    //   }
+    // }
 
-      const {status} = response
-      if (status) {
-        const {result} = response
-        const {message} = result as { message: string }
+    // const removeAccessToken = () => {
+    //   userTokenStorage.removeToken()
+    //   delete axiosInstance.defaults.headers['Authorization']
+    // }
 
-        removeAccessToken()
+    // const setUserData = (user: UserInterface) => {
+    //   setAuthState((prev) => ({
+    //     ...prev,
+    //     userData: user
+    //   }))
+    // }
 
-        return {
-          status: true,
-          message: message
-        }
-      } else {
-        const {error} = response
-        const {message} = error as ResponseError
-
-        return {
-          status: false,
-          message: message
-        }
-      }
-    }
-
-    const removeAccessToken = () => {
-      userTokenStorage.removeToken()
-      delete axiosInstance.defaults.headers['Authorization']
-    }
-
-    const setUserData = (user: UserInterface) => {
-      setAuthState((prev) => ({
-        ...prev,
-        userData: user
-      }))
-    }
-
-    const setAccessToken = async (token: string) => {
-      userTokenStorage.setToken(token)
-      axiosInstance.defaults.headers["Authorization"] = `Bearer ${token}`
-
-      setAuthState((prev) => ({
-        ...prev,
-        accessToken: token,
-        isAuth: true,
-      }))
-    }
+    // const setAccessToken = async (token: string) => {
+    //   userTokenStorage.setToken(token)
+    //   axiosInstance.defaults.headers["Authorization"] = `Bearer ${token}`
+    //
+    //   setAuthState((prev) => ({
+    //     ...prev,
+    //     accessToken: token,
+    //     isAuth: true,
+    //   }))
+    // }
 
     const initialize = async () => {
       const {isAuth, accessToken} = getAuthState()
@@ -80,10 +80,10 @@ export const AuthStateProvider = ({children}: { children: ReactNode }) => {
 
         const {status} = response
         if (status) {
-          const {data} = response
-          setUserData(data as UserInterface)
+          // const {data} = response
+          // setUserData(data as UserInterface)
         } else {
-          removeAccessToken()
+          // removeAccessToken()
           setAuthState((prevState) => ({
             ...prevState,
             isAuth: false,
@@ -96,10 +96,10 @@ export const AuthStateProvider = ({children}: { children: ReactNode }) => {
     }
 
     methodRef.current = {
-      logout,
-      removeAccessToken,
-      setUserData,
-      setAccessToken,
+      // logout,
+      // removeAccessToken,
+      // setUserData,
+      // setAccessToken,
       initialize
     }
   }
