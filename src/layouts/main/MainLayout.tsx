@@ -1,13 +1,25 @@
-import {ReactNode} from 'react'
+import {Fragment, ReactNode, useState} from 'react'
 
-interface Props {
-  children: ReactNode
-}
+import {MainNavbar} from '@/layouts/main'
 
-export const MainLayout = ({children}: Props) => {
+import '@/styles/layouts/l4/layout.min.css'
+import '@/styles/layouts/l4/components.min.css'
+
+export const MainLayout = ({children}: { children: ReactNode }) => {
+  const [hasAccess, setHasAccess] = useState(true)
+
+  const TeaPot = () => <>Tea pot</>
+
   return (
-    <>
-      {children}
-    </>
+    <Fragment>
+      <MainNavbar/>
+      {/*<Navigation/>*/}
+
+      {/*<Suspense fallback={<p>Loading...</p>}>*/}
+        {hasAccess ? children : <TeaPot/>}
+      {/*</Suspens>*/}
+
+      {/*<Footer/>*/}
+    </Fragment>
   )
 }

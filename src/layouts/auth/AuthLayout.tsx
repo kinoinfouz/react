@@ -1,27 +1,27 @@
 import {useNavigate} from 'react-router-dom'
 import {useForm} from 'react-hook-form'
 
+import {AuthDataInterface, UserCredentialsInterface} from '@/types/auth'
+import {ResponseError} from '@/types/response'
+import {useNotification} from '@/contexts/notification'
 import {useAuthMethod} from '@/contexts/auth-state'
 import {AuthApi} from '@/api/auth/auth.api'
-import {useNotification} from '@/contexts/notification'
 
 import '@/layouts/auth/style.css'
 import {CaretCircleRight, Lock, UserCircle} from '@phosphor-icons/react'
 import logo from '@/assets/logo.svg'
 
-import {Inputs, Credentials, ResponseError, AuthResponse} from '@/types/type'
-
 export const AuthLayout = () => {
-  const {register, handleSubmit, formState: {errors}} = useForm<Inputs>()
+  const {register, handleSubmit, formState: {errors}} = useForm<UserCredentialsInterface>()
   const {notification} = useNotification()
   const {setAccessToken} = useAuthMethod()
   const navigate = useNavigate()
 
-  const submitForm = async (credentials: Credentials) => {
+  const submitForm = async (credentials: UserCredentialsInterface) => {
     const {status, data, error} = await AuthApi.login(credentials)
 
     if (status) {
-      const {token} = data as AuthResponse
+      const {token} = data as AuthDataInterface
 
       setAccessToken(token)
       navigate('/')

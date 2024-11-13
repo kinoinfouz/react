@@ -7,6 +7,8 @@ import {AuthLayout} from '@/layouts/auth'
 
 const Error404 = lazy(() => import('@/layouts/error/Error404'))
 
+const UserPage = lazy(() => import('@/pages/setting/user/UserPage'))
+
 export const Router = () => {
   return useRoutes([
     {
@@ -18,8 +20,23 @@ export const Router = () => {
           element: <>Home page</>
         },
         {
-          path: 'about',
-          element: <>About page</>
+          path: 'setting',
+          children: [
+            {
+              path: 'user',
+              element: <UserPage/>,
+              children: [
+                {
+                  path: 'list',
+                  element: <>User list</>
+                }
+              ]
+            }
+          ]
+        },
+        {
+          path: 'error-page',
+          element: (<>System error</>)
         },
         {
           path: '404',
