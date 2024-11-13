@@ -1,6 +1,6 @@
 import {Fragment, ReactNode, useState} from 'react'
 
-import {MainNavbar} from '@/layouts/main'
+import {MainNavbar, Navigation} from '@/layouts/main'
 
 import '@/styles/layouts/l4/layout.min.css'
 import '@/styles/layouts/l4/components.min.css'
@@ -13,7 +13,7 @@ export const MainLayout = ({children}: { children: ReactNode }) => {
   return (
     <Fragment>
       <MainNavbar/>
-      {/*<Navigation/>*/}
+      <Navigation/>
 
       {/*<Suspense fallback={<p>Loading...</p>}>*/}
         {hasAccess ? children : <TeaPot/>}
