@@ -2,10 +2,14 @@ import {useState} from 'react'
 import {NavLink} from 'react-router-dom'
 import {Dropdown, DropdownMenu, DropdownToggle} from 'reactstrap'
 
+import {DateTimeInterface} from '@/types/type'
+
 interface MenuInterface {
-  id: number;
-  title: string;
-  web_path: string
+  id: number,
+  type: string,
+  title: string,
+  web_path: string,
+  created: DateTimeInterface
 }
 
 interface NavbarInterface {

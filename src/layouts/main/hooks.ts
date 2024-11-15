@@ -1,11 +1,11 @@
 import {useQuery} from '@tanstack/react-query'
 
-import {MenuApi} from '@/api/system/menu.api'
+import {MenuApi} from '@/api/system/menu/menu.api'
 
 export const useNavbarMenus = () => {
   const {data, isLoading} = useQuery({
-    queryKey: MenuApi.all(),
-    queryFn: () => {}
+    queryKey: MenuQueryKeys.menus(),
+    queryFn: MenuApi.menus
   })
 
   return {data, isLoading}

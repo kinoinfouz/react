@@ -6,19 +6,6 @@ import {SuNavbar} from '@/components/navbar'
 import {House} from '@phosphor-icons/react'
 
 export const Navigation = () => {
-  const list = [
-    {
-      id: 1,
-      title: 'Setting',
-      children: [
-        {
-          id: 2,
-          title: 'User list',
-        }
-      ]
-    },
-    {}
-  ]
 
   return (
     <Fragment>
@@ -33,11 +20,11 @@ export const Navigation = () => {
                 </NavLink>
               </li>
 
-              {list.map((item) => {
+              {menus.map((menu) => {
                 return <SuNavbar
-                  key={item.id}
-                  title={item.title}
-                  children={item.children}
+                  key={menu.id}
+                  title={menu.title}
+                  children={menu.children}
                 />
               })}
 
